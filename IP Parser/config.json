@@ -1,0 +1,6 @@
+{
+  "FileLog": "log.txt",
+  "FileOut": "out.txt",
+  "AddressStart": "192.168.0.0",
+  "AddressMask": 32
+}

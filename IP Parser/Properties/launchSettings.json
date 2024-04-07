@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "IP Parser": {
+      "commandName": "Project",
+      "commandLineArgs": "--file-log log.txt\r\n--file-out a.txt\r\n--address-start 192.168.0.1\r\n--address-mask 26"
+    }
+  }
+}
