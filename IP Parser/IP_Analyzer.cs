@@ -41,6 +41,8 @@ namespace IP_Parser
 			var adrStart = _ipStart.Split('.');
 			var ipCheck  = ip.Split('.');
 
+			if (ipCheck.Length > 4) return false;
+
 			var mask = _ipMask.Split('.');
 
 			int byteCount = 3;
