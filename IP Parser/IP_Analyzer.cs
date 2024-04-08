@@ -5,8 +5,8 @@ namespace IP_Parser
 	public class IP_Analyzer
 	{
 		private string _ipStart = string.Empty;
+		private string _ipMask = string.Empty;
 		private int _ipMaskNum = 32;
-		private string _ipMask = "255.255.255.255";
 
 		int[] adrStartNums = new int[4];
 		int[] ipCheckNums = new int[4];
@@ -15,6 +15,7 @@ namespace IP_Parser
         public IP_Analyzer()
         {
 			_ipStart = "0.0.0.0";
+			_ipMask = "255.255.255.255";
 		}
 
 		public string IPStart 
@@ -36,9 +37,17 @@ namespace IP_Parser
 
 		public bool IP_Compare(string ip)
 		{
+			//TODO: вынести расчет для начального адреса и маски
 			var adrStart = _ipStart.Split('.');
 			var ipCheck  = ip.Split('.');
+
 			var mask = _ipMask.Split('.');
+
+			int byteCount = 3;
+
+			long ipAddrStart = 0;
+			long ipAddr = 0;
+			long maskAddr = 0;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -59,12 +68,24 @@ namespace IP_Parser
 				}
 			}
 
-			if (ipCheckNums[0] < adrStartNums[0]) return false;
-			if (ipCheckNums[1] < adrStartNums[1]) return false;
-			if (ipCheckNums[2] < adrStartNums[2]) return false;
-			if (ipCheckNums[3] < adrStartNums[3]) return false;
+			for (int i = 0; i < 4; i++)
+			{
+				ipAddrStart += adrStartNums[i] * (long)Math.Pow(256, byteCount - i);
+			}
 
-			return true;
+			for (int i = 0; i < 4; i++)
+			{
+				ipAddr += ipCheckNums[i] * (long)Math.Pow(256, byteCount - i);
+			}
+
+			for (int i = 0; i < 4; i++)
+			{
+				maskAddr += ipMaskNums[i] * (long)Math.Pow(256, byteCount - i);
+			}
+
+			if (ipAddr >= ipAddrStart && ipAddr <= maskAddr) return true;
+
+			return false;
 		}
 
 		private string IP_Mask()
