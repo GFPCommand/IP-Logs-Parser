@@ -2,7 +2,9 @@
 using IP_Parser;
 
 Options opts = new();
-FileIOManager manager = new();
+FileIOManager manager;
+
+int mask = 32;
 
 Parser.Default.ParseArguments<Options>(args)
 	.WithParsed(o =>
@@ -30,19 +32,32 @@ if (string.IsNullOrEmpty(opts.AddressStart) && opts.AddressMask != -1)
 	return;
 }
 
+if (opts.AddressStart.Split('.').Length > 4)
+{
+	Console.WriteLine("IPv4 address cannot contains more than 4 values");
+	return;
+}
+
+if (!string.IsNullOrEmpty(opts.AddressStart) && opts.AddressStart.Split('.').Length < 4)
+{
+	Console.WriteLine("IPv4 address cannot contains less than 4 values");
+	return;
+}
+
 if (!File.Exists(opts.FileLog))
 {
 	Console.WriteLine("Log file not found!");
 	return;
 }
 
-if (!string.IsNullOrEmpty(opts.AddressStart))
-	manager.analyzer.IPStart = opts.AddressStart;
+if ((opts.AddressMask >= 0 && opts.AddressMask <= 32))
+	mask = opts.AddressMask;
+else if (opts.AddressMask == -1)
+	mask = 32;
+else
+	Console.WriteLine("Error mask value. Program will use default value: 32.");
 
-if (opts.AddressMask >= 0 && opts.AddressMask <= 32)
-{
-	manager.analyzer.IPMask = opts.AddressMask;
-}
+manager = new(opts.AddressStart, mask);
 
 manager.Read_IP(opts.FileLog);
 manager.Write_IP(opts.FileOut);

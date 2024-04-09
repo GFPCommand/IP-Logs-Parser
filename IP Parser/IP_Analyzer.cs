@@ -8,81 +8,55 @@ namespace IP_Parser
 		private string _ipMask = string.Empty;
 		private int _ipMaskNum = 32;
 
-		int[] adrStartNums = new int[4];
-		int[] ipCheckNums = new int[4];
-		int[] ipMaskNums = new int[4];
+		private string[] _adrStart = new string[4];
+		private string[] _mask = new string[4];
 
-        public IP_Analyzer()
+		private int[] adrStartNums = new int[4];
+		private int[] ipCheckNums = new int[4];
+		private int[] ipMaskNums = new int[4];
+
+		private readonly int byteCount = 3;
+
+		private long ipAddrStart = 0;
+		private long maskAddr = 0;
+		private long ipAddr = 0;
+
+		private readonly string baseAddress = "0.0.0.0";
+
+        public IP_Analyzer(string? ipStart, int ipMask)
         {
-			_ipStart = "0.0.0.0";
-			_ipMask = "255.255.255.255";
-		}
+			_ipStart = string.IsNullOrEmpty(ipStart) ? baseAddress : (ipStart.Split('.').Length > 4 ? baseAddress : ipStart);
+			_ipMaskNum = ipMask;
 
-		public string IPStart 
-		{ 
-			set {
-				_ipStart = value;
-			} 
-		}
+			_ipMask = IP_Mask();
 
-		public int IPMask
-		{
-			set
-			{
-				_ipMaskNum = value;
+			_mask = _ipMask.Split('.');
 
-				_ipMask = IP_Mask();
-			}
+			_adrStart = _ipStart.Split('.');
+
+			FillAddressMaskAddress();
 		}
 
 		public bool IP_Compare(string ip)
 		{
-			//TODO: вынести расчет для начального адреса и маски
-			var adrStart = _ipStart.Split('.');
 			var ipCheck  = ip.Split('.');
 
 			if (ipCheck.Length > 4) return false;
 
-			var mask = _ipMask.Split('.');
-
-			int byteCount = 3;
-
-			long ipAddrStart = 0;
-			long ipAddr = 0;
-			long maskAddr = 0;
+			ipAddr = 0;
 
 			for (int i = 0; i < 4; i++)
 			{
-				if (!int.TryParse(adrStart[i], out adrStartNums[i]))
-				{
-					Console.WriteLine($"Error reading {i + 1} byte of IP start address.\nPlease, check correctness of {_ipStart}");
-					return false;
-				}
 				if (!int.TryParse(ipCheck[i], out ipCheckNums[i]))
 				{
 					Console.WriteLine($"Error reading {i + 1} byte of IP address.\nPlease, check correctness of {ip}");
 					return false;
 				}
-				if (!int.TryParse(mask[i], out ipMaskNums[i]))
-				{
-					Console.WriteLine($"Error reading {i + 1} byte of IP address mask.\nPlease, check correctness of {_ipMask}");
-					return false;
-				}
-			}
-
-			for (int i = 0; i < 4; i++)
-			{
-				ipAddrStart += adrStartNums[i] * (long)Math.Pow(256, byteCount - i);
 			}
 
 			for (int i = 0; i < 4; i++)
 			{
 				ipAddr += ipCheckNums[i] * (long)Math.Pow(256, byteCount - i);
-			}
-
-			for (int i = 0; i < 4; i++)
-			{
-				maskAddr += ipMaskNums[i] * (long)Math.Pow(256, byteCount - i);
 			}
 
 			if (ipAddr >= ipAddrStart && ipAddr <= maskAddr) return true;
@@ -115,6 +89,31 @@ namespace IP_Parser
 			resultMask.Remove(resultMask.Length - 1, 1);
 
 			return resultMask.ToString();
+		}
+
+		private void FillAddressMaskAddress()
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if (!int.TryParse(_adrStart[i], out adrStartNums[i]))
+				{
+					Console.WriteLine($"Error reading {i + 1} byte of IP start address.\nPlease, check correctness of {_ipStart}");
+				}
+				if (!int.TryParse(_mask[i], out ipMaskNums[i]))
+				{
+					Console.WriteLine($"Error reading {i + 1} byte of IP address mask.\nPlease, check correctness of {_ipMask}");
+				}
+			}
+
+			for (int i = 0; i < 4; i++)
+			{
+				ipAddrStart += adrStartNums[i] * (long)Math.Pow(256, byteCount - i);
+			}
+
+			for (int i = 0; i < 4; i++)
+			{
+				maskAddr += ipMaskNums[i] * (long)Math.Pow(256, byteCount - i);
+			}
 		}
     }
 }

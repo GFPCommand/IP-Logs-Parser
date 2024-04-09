@@ -4,9 +4,14 @@
 	{
 		private Dictionary<string, int> ips = [];
 
-		public IP_Analyzer analyzer = new();
+		public IP_Analyzer analyzer;
 
-		public void Read_IP(string fileLog)
+        public FileIOManager(string? addressStart, int addressMask)
+        {
+            analyzer = new(addressStart, addressMask);
+        }
+
+        public void Read_IP(string fileLog)
 		{
 			foreach (var item in File.ReadLines(fileLog))
 			{
