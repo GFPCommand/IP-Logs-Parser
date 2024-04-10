@@ -38,6 +38,16 @@ if (opts.AddressStart.Split('.').Length > 4)
 	return;
 }
 
+foreach (var item in opts.AddressStart.Split('.'))
+{
+	int val;
+    if (int.TryParse(item, out val) && (val > 255 || val < 0))
+	{
+		Console.WriteLine($"IP address {opts.AddressStart} contains incorrect value(s).\nPlease check correctness of {opts.AddressStart}");
+		return;
+	}
+}
+
 if (!string.IsNullOrEmpty(opts.AddressStart) && opts.AddressStart.Split('.').Length < 4)
 {
 	Console.WriteLine("IPv4 address cannot contains less than 4 values");
