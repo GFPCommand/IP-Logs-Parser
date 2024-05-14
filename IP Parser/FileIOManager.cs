@@ -1,6 +1,6 @@
 ﻿namespace IP_Parser
 {
-	public class FileIOManager
+	public class FileIOManager : IFileManager
 	{
 		private Dictionary<string, int> ips = [];
 

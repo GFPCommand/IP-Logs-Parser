@@ -2,7 +2,7 @@
 
 namespace IP_Parser
 {
-	public class IP_Analyzer
+	public class IP_Analyzer : IAnalyzer
 	{
 		private string _ipStart = string.Empty;
 		private string _ipMask = string.Empty;
